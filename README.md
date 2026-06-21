@@ -30,3 +30,7 @@ Membantu pengguna mengetahui tingkat kesiapan keamanan digital melalui asesmen s
 
 Menyediakan informasi ancaman siber dan peringatan keamanan digital yang relevan.
 
+
+## Development Notes
+
+Project ini dikembangkan menggunakan workflow GitHub yang terdiri dari branch, commit, pull request, dan merge agar setiap perubahan terdokumentasi dengan jelas.
