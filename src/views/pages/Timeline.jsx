@@ -1,5 +1,5 @@
-import timelineHero from '../../WhatsApp Image 2026-06-10 at 16.50.02.jpeg'
-import timelineChart from '../../WhatsApp Image 2026-06-10 at 16.52.06.jpeg'
+import timelineHero from '../../../WhatsApp Image 2026-06-10 at 16.50.02.jpeg'
+import timelineChart from '../../../WhatsApp Image 2026-06-10 at 16.52.06.jpeg'
 
 function Timeline() {
   const summary = [

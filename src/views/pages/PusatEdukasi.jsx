@@ -1,4 +1,4 @@
-import heroImage from '../assets/WhatsApp Image 2026-06-10 at 15.47.24.jpeg'
+import heroImage from '../../assets/WhatsApp Image 2026-06-10 at 15.47.24.jpeg'
 
 function PusatEdukasi() {
   const quickCategories = [

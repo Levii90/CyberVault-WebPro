@@ -1,4 +1,5 @@
 function FeaturePageShell({
+  className = '',
   eyebrow,
   title,
   description,
@@ -8,7 +9,7 @@ function FeaturePageShell({
   tips = [],
 }) {
   return (
-    <div className="cv-feature-page">
+    <div className={`cv-feature-page${className ? ` ${className}` : ''}`}>
       <section className="cv-feature-hero">
         <div className="cv-feature-hero__copy">
           <p className="cv-section-kicker">{eyebrow}</p>

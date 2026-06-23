@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { logout } from '../../controllers/authController.js'
 
 function Logout() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    sessionStorage.removeItem('cv-authenticated')
+    logout()
     navigate('/login', { replace: true })
   }, [navigate])
 

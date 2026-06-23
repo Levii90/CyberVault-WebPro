@@ -1,11 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { login } from '../../controllers/authController.js'
 
 function Login() {
   const navigate = useNavigate()
 
   const handleLogin = (event) => {
     event.preventDefault()
-    sessionStorage.setItem('cv-authenticated', 'true')
+    login()
     navigate('/dashboard')
   }
 

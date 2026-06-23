@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import profileIllustration from '../assets/hero_gaia-1.png'
-import '../styles/AccountPage.css'
+import profileIllustration from '../../assets/hero_gaia-1.png'
+import '../../styles/AccountPage.css'
 
 const profile = {
   name: 'Maman Vyndy',

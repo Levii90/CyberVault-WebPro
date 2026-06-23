@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import '../styles/IncidentReportPage.css'
+import '../../styles/IncidentReportPage.css'
 
 const incidentTypes = [
   {

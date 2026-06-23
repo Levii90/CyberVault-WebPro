@@ -9,7 +9,7 @@ function DashboardLayout() {
 
   return (
     <div
-      className={`cv-dashboard-shell ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}
+      className={`cv-dashboard-shell ${sidebarCollapsed ? 'is-collapsed' : ''}`}
     >
       <Sidebar collapsed={sidebarCollapsed} />
 

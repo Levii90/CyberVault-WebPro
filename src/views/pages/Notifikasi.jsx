@@ -3,6 +3,7 @@ import FeaturePageShell from '../components/FeaturePageShell.jsx'
 function Notifikasi() {
   return (
     <FeaturePageShell
+      className="cv-notification-page"
       eyebrow="Notifikasi"
       title="Pusat Notifikasi"
       description="Lihat pembaruan aplikasi, alert keamanan, dan reminder pembelajaran dalam satu feed yang mudah dipantau."

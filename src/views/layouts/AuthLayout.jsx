@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import illustrationShield from '../../Screenshot 2026-06-10 141418.png'
+import illustrationShield from '../../../Screenshot 2026-06-10 141418.png'
 
 function AuthLayout() {
   return (
