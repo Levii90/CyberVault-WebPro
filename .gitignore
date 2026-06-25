@@ -1,6 +1,15 @@
 node_modules/
 dist/
 .env
+.env.local
+.env.*.local
+coverage/
+framework-sources/
+release/
+*.log
+docs.zip
+search-results.txt
+Thumbs.db
 vendor/
 .DS_Store
 .vscode/

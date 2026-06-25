@@ -1,10 +1,15 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 function ResetPassword() {
   const navigate = useNavigate()
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const handleResetPassword = (event) => {
     event.preventDefault()
+    setShowNewPassword(false)
+    setShowConfirmPassword(false)
     navigate('/login')
   }
 
@@ -61,11 +66,20 @@ function ResetPassword() {
             <i className="bi bi-lock" />
             <input
               id="new-password"
-              type="password"
+              type={showNewPassword ? 'text' : 'password'}
               className="cv-form-control"
-              placeholder="••••••••"
+              placeholder="Masukkan kata sandi baru"
+              autoComplete="new-password"
               required
             />
+            <button
+              type="button"
+              className="cv-input-action"
+              aria-label={showNewPassword ? 'Sembunyikan kata sandi baru' : 'Lihat kata sandi baru'}
+              onClick={() => setShowNewPassword((current) => !current)}
+            >
+              <i className={`bi ${showNewPassword ? 'bi-eye-slash' : 'bi-eye'}`} />
+            </button>
           </div>
         </div>
 
@@ -77,11 +91,24 @@ function ResetPassword() {
             <i className="bi bi-shield-lock" />
             <input
               id="confirm-new-password"
-              type="password"
+              type={showConfirmPassword ? 'text' : 'password'}
               className="cv-form-control"
-              placeholder="••••••••"
+              placeholder="Konfirmasi kata sandi baru"
+              autoComplete="new-password"
               required
             />
+            <button
+              type="button"
+              className="cv-input-action"
+              aria-label={
+                showConfirmPassword
+                  ? 'Sembunyikan konfirmasi kata sandi baru'
+                  : 'Lihat konfirmasi kata sandi baru'
+              }
+              onClick={() => setShowConfirmPassword((current) => !current)}
+            >
+              <i className={`bi ${showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'}`} />
+            </button>
           </div>
         </div>
 

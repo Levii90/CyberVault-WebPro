@@ -1,154 +1,143 @@
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import heroImage from '../../assets/WhatsApp Image 2026-06-10 at 15.47.24.jpeg'
+import {
+  alertNews,
+  dashboardStats,
+  identityCategoryOptions,
+  identityItems as initialIdentityItems,
+  identityTypeOptions,
+  learningProgress,
+  quickActions,
+  recentActivities,
+  todayPriorities,
+  vaultActivities,
+} from '../../data/dashboard/dashboardData.js'
 import '../../styles/DashboardPage.css'
 
+const initialIdentityForm = {
+  category: '',
+  detail: '',
+  relatedTo: '',
+}
+
+function formatCurrentDate() {
+  return new Intl.DateTimeFormat('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(new Date())
+}
+
+function buildIdentityTypeLabel(category) {
+  const mapping = {
+    Email: 'Email Baru',
+    'Nomor Telepon': 'Nomor Telepon Baru',
+    'Akun Online': 'Akun Online Baru',
+    'Dokumen Penting': 'Dokumen Penting Baru',
+    'Kontak Darurat': 'Kontak Darurat Baru',
+  }
+
+  return mapping[category] || 'Identitas Baru'
+}
+
+function resolveStatusClass(status) {
+  if (status === 'Terverifikasi') {
+    return 'is-success'
+  }
+
+  if (status === 'Aktif') {
+    return 'is-info'
+  }
+
+  return 'is-warning'
+}
+
 function Dashboard() {
-  const statistik = [
-    {
-      icon: 'bi-shield-lock',
-      title: 'Cyber Awareness Score',
-      value: '80',
-      suffix: '/100',
-      note: 'Baik',
-      trend: '+8 minggu ini',
-    },
-    {
-      icon: 'bi-mortarboard',
-      title: 'Progres Belajar',
-      value: '50%',
-      note: '12 / 24 Materi Selesai',
-      trend: '3 modul aktif',
-    },
-    {
-      icon: 'bi-file-earmark-text',
-      title: 'Laporan Keaktifan',
-      value: '3',
-      note: '2 Sedang Diproses',
-      trend: '1 prioritas tinggi',
-    },
-    {
-      icon: 'bi-patch-check',
-      title: 'Sertifikat Pembelajaran',
-      value: '6',
-      note: 'Lihat Semua',
-      trend: '2 siap diunduh',
-    },
-  ]
+  const [activeCategory, setActiveCategory] = useState('Semua Identitas')
+  const [identityRows, setIdentityRows] = useState(initialIdentityItems)
+  const [selectedActivity, setSelectedActivity] = useState(recentActivities[0])
+  const [isAddIdentityOpen, setIsAddIdentityOpen] = useState(false)
+  const [identityForm, setIdentityForm] = useState(initialIdentityForm)
+  const [identityFormErrors, setIdentityFormErrors] = useState(initialIdentityForm)
+  const [vaultFeedback, setVaultFeedback] = useState('')
 
-  const aksiCepat = [
-    {
-      icon: 'bi-book',
-      title: 'Mulai Belajar',
-      text: 'Akses materi & kuis keamanan digital',
-      to: '/pusat-edukasi',
-    },
-    {
-      icon: 'bi-bug',
-      title: 'Laporkan Insiden',
-      text: 'Laporkan kejadian mencurigakan',
-      to: '/pelaporan-insiden',
-    },
-    {
-      icon: 'bi-file-earmark-lock',
-      title: 'Baca Cyber Alert',
-      text: 'Dapatkan berita & peringatan terbaru',
-      to: '/informasi-peringatan',
-    },
-  ]
+  const identityCategoryCounts = useMemo(
+    () =>
+      identityCategoryOptions.map((category) => ({
+        label: category,
+        count:
+          category === 'Semua Identitas'
+            ? identityRows.length
+            : identityRows.filter((item) => item.category === category).length,
+      })),
+    [identityRows],
+  )
 
-  const progresBelajar = [
-    { label: 'Keamanan Akun & Password', value: '70%', detail: '4 dari 5 modul' },
-    { label: 'Privasi Data Pribadi', value: '50%', detail: '2 kuis menunggu' },
-    { label: 'Phising & Social Engineering', value: '35%', detail: 'Lanjutkan sesi ke-3' },
-  ]
+  const filteredIdentityRows = useMemo(() => {
+    if (activeCategory === 'Semua Identitas') {
+      return identityRows
+    }
 
-  const berita = [
-    {
-      icon: 'bi-exclamation-triangle-fill',
-      title: 'Peringatan: Modus Penipuan QRIS Palsu Meningkat',
-      text: 'Waspadai modus penipuan menggunakan QRIS palsu yang marak terjadi di berbagai kota.',
-      tag: 'Peringatan',
-      time: '2 Jam Lalu',
-      tone: 'danger',
-    },
-    {
-      icon: 'bi-lock-fill',
-      title: 'Kebocoran Data di Platform E-Commerce',
-      text: 'Beberapa data pengguna e-commerce dilaporkan bocor. Segera ubah password dan aktifkan autentikasi dua faktor.',
-      tag: 'Informasi',
-      time: '2 Jam Lalu',
-      tone: 'info',
-    },
-  ]
+    return identityRows.filter((item) => item.category === activeCategory)
+  }, [activeCategory, identityRows])
 
-  const aktivitasTerbaru = [
-    {
-      icon: 'bi-book',
-      title: 'Menyelesaikan materi',
-      subtitle: 'Phishing: Kenali & Hindari',
-      time: 'Hari ini, 09:30',
-      tone: 'green',
-    },
-    {
-      icon: 'bi-ui-checks-grid',
-      title: 'Menyelesaikan kuis',
-      subtitle: 'Keamanan Password',
-      time: 'Kemarin, 16:45',
-      tone: 'purple',
-    },
-    {
-      icon: 'bi-file-earmark-text',
-      title: 'Laporan #CV-2024-0017',
-      subtitle: 'Diterima oleh sistem',
-      time: 'Kemarin, 11:20',
-      tone: 'red',
-    },
-    {
-      icon: 'bi-clock-history',
-      title: 'Laporan #CV-2024-0016',
-      subtitle: 'Sedang diproses',
-      time: '2 hari lalu',
-      tone: 'orange',
-    },
-    {
-      icon: 'bi-shield-check',
-      title: 'Mengupdate recovery email',
-      subtitle: 'Akun berhasil diperbarui',
-      time: '3 hari lalu',
-      tone: 'green',
-    },
-  ]
+  const handleIdentityFormChange = (event) => {
+    const { name, value } = event.target
 
-  const kategoriIdentitas = [
-    'Semua Identitas (5)',
-    'Email (2)',
-    'Nomor Telepon (2)',
-    'Akun Online (4)',
-    'Dokumen Penting (2)',
-    'Kontak Darurat (1)',
-  ]
+    setIdentityForm((currentValue) => ({
+      ...currentValue,
+      [name]: value,
+    }))
 
-  const daftarIdentitas = [
-    ['Email Utama', 'maman@example.com', 'Akun CyberVault', 'Terverifikasi', '23 Apr 2025'],
-    ['Email Cadangan', 'maman.vyndy@gmail.com', 'Pemulihan Akun', 'Terverifikasi', '18 Apr 2025'],
-    ['Nomor Telepon Utama', '+62 812 xxxx xxxx', 'Verifikasi & Notifikasi', 'Terverifikasi', '23 Apr 2025'],
-    ['Nomor Telepon Cadangan', '+62 857 xxxx xxxx', 'Pemulihan Akun', 'Pending', '18 Apr 2025'],
-    ['Google Account', 'maman.vyndy@gmail.com', 'Login & Sinkronisasi', 'Aktif', '20 Apr 2025'],
-    ['Instagram', '@mamanyvndy', 'Media Sosial', 'Aktif', '15 Apr 2025'],
-    ['KTP', '3273 xxxx xxxx', 'Verifikasi Identitas', 'Terverifikasi', '10 Apr 2025'],
-  ]
+    setIdentityFormErrors((currentValue) => ({
+      ...currentValue,
+      [name]: '',
+    }))
+  }
 
-  const aktivitasVault = [
-    ['Email utama diperbarui', '23 Apr 2025'],
-    ['2FA diaktifkan', '20 Apr 2025'],
-    ['Password diubah', '18 Apr 2025'],
-  ]
+  const handleOpenIdentityModal = () => {
+    setIsAddIdentityOpen(true)
+    setVaultFeedback('')
+  }
 
-  const prioritasHariIni = [
-    'Aktifkan 2FA pada seluruh akun utama',
-    'Selesaikan modul Phishing & Social Engineering',
-    'Review laporan insiden yang masih diproses',
-  ]
+  const handleCloseIdentityModal = () => {
+    setIsAddIdentityOpen(false)
+    setIdentityForm(initialIdentityForm)
+    setIdentityFormErrors(initialIdentityForm)
+  }
+
+  const handleIdentitySubmit = (event) => {
+    event.preventDefault()
+
+    const nextErrors = {
+      category: identityForm.category ? '' : 'Tipe identitas wajib dipilih.',
+      detail: identityForm.detail.trim() ? '' : 'Nilai identitas wajib diisi.',
+      relatedTo: identityForm.relatedTo.trim() ? '' : 'Field terkait dengan wajib diisi.',
+    }
+
+    setIdentityFormErrors(nextErrors)
+
+    if (nextErrors.category || nextErrors.detail || nextErrors.relatedTo) {
+      return
+    }
+
+    const newIdentityItem = {
+      id: Date.now(),
+      category: identityForm.category,
+      type: buildIdentityTypeLabel(identityForm.category),
+      detail: identityForm.detail.trim(),
+      relatedTo: identityForm.relatedTo.trim(),
+      status: 'Pending',
+      updatedAt: formatCurrentDate(),
+    }
+
+    setIdentityRows((currentValue) => [newIdentityItem, ...currentValue])
+    setActiveCategory('Semua Identitas')
+    setSelectedActivity((currentValue) => currentValue)
+    setVaultFeedback('Identitas baru berhasil ditambahkan ke vault dalam mode mock.')
+    handleCloseIdentityModal()
+  }
 
   return (
     <div className="cv-dashboard-v2">
@@ -178,7 +167,7 @@ function Dashboard() {
               <strong>3 prioritas aktif</strong>
             </div>
             <div className="cv-dash-priority__list">
-              {prioritasHariIni.map((item) => (
+              {todayPriorities.map((item) => (
                 <div key={item} className="cv-dash-priority__item">
                   <i className="bi bi-check2-circle" />
                   <span>{item}</span>
@@ -192,23 +181,11 @@ function Dashboard() {
           <div className="cv-dash-hero__image-wrap">
             <img src={heroImage} alt="CyberVault Smart City" />
           </div>
-          <div className="cv-dash-floating-card cv-dash-floating-card--score">
-            <span>Identity safety</span>
-            <strong>84 / 100</strong>
-            <small>naik 6 poin bulan ini</small>
-          </div>
-          <div className="cv-dash-floating-card cv-dash-floating-card--signal">
-            <i className="bi bi-broadcast-pin" />
-            <div>
-              <strong>2 alert penting</strong>
-              <span>perlu ditinjau hari ini</span>
-            </div>
-          </div>
         </div>
       </section>
 
       <section className="cv-dash-metrics">
-        {statistik.map((item) => (
+        {dashboardStats.map((item) => (
           <article key={item.title} className="cv-dash-metric-card">
             <div className="cv-dash-metric-card__icon">
               <i className={`bi ${item.icon}`} />
@@ -240,7 +217,7 @@ function Dashboard() {
         </div>
 
         <div className="cv-dash-quick-actions__grid">
-          {aksiCepat.map((item) => (
+          {quickActions.map((item) => (
             <Link key={item.title} to={item.to} className="cv-dash-action-card">
               <div className="cv-dash-action-card__icon">
                 <i className={`bi ${item.icon}`} />
@@ -277,7 +254,7 @@ function Dashboard() {
             </div>
 
             <div className="cv-dash-learning__list">
-              {progresBelajar.map((item) => (
+              {learningProgress.map((item) => (
                 <div key={item.label} className="cv-dash-progress-row">
                   <div className="cv-dash-progress-row__top">
                     <div>
@@ -307,7 +284,7 @@ function Dashboard() {
           </div>
 
           <div className="cv-dash-alert-list">
-            {berita.map((item) => (
+            {alertNews.map((item) => (
               <article key={item.title} className={`cv-dash-alert-card is-${item.tone}`}>
                 <div className="cv-dash-alert-card__icon">
                   <i className={`bi ${item.icon}`} />
@@ -338,9 +315,24 @@ function Dashboard() {
             </Link>
           </div>
 
+          {selectedActivity ? (
+            <div className="cv-dash-timeline-detail" role="status" aria-live="polite">
+              <strong>{selectedActivity.title}</strong>
+              <span>{selectedActivity.subtitle}</span>
+              <p>{selectedActivity.detail}</p>
+            </div>
+          ) : null}
+
           <div className="cv-dash-timeline">
-            {aktivitasTerbaru.map((item) => (
-              <article key={`${item.title}-${item.time}`} className="cv-dash-timeline-item">
+            {recentActivities.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`cv-dash-timeline-item${
+                  selectedActivity?.id === item.id ? ' is-active' : ''
+                }`}
+                onClick={() => setSelectedActivity(item)}
+              >
                 <div className={`cv-dash-timeline-item__icon is-${item.tone}`}>
                   <i className={`bi ${item.icon}`} />
                 </div>
@@ -349,7 +341,7 @@ function Dashboard() {
                   <p>{item.subtitle}</p>
                 </div>
                 <span>{item.time}</span>
-              </article>
+              </button>
             ))}
           </div>
         </article>
@@ -360,7 +352,11 @@ function Dashboard() {
               <p className="cv-dash-eyebrow">Identity vault</p>
               <h2>Kelola identitas digital</h2>
             </div>
-            <button type="button" className="cv-dash-btn cv-dash-btn--soft">
+            <button
+              type="button"
+              className="cv-dash-btn cv-dash-btn--soft"
+              onClick={handleOpenIdentityModal}
+            >
               + Tambah Identitas
             </button>
           </div>
@@ -374,19 +370,24 @@ function Dashboard() {
               </div>
 
               <div className="cv-dash-vault-tags">
-                {kategoriIdentitas.map((item, index) => (
-                  <span
-                    key={item}
-                    className={`cv-dash-vault-tag${index === 0 ? ' is-active' : ''}`}
+                {identityCategoryCounts.map((item) => (
+                  <button
+                    key={item.label}
+                    type="button"
+                    className={`cv-dash-vault-tag${
+                      activeCategory === item.label ? ' is-active' : ''
+                    }`}
+                    onClick={() => setActiveCategory(item.label)}
                   >
-                    {item}
-                  </span>
+                    <span>{item.label}</span>
+                    <strong>{item.count}</strong>
+                  </button>
                 ))}
               </div>
 
               <div className="cv-dash-vault-activity">
                 <h3>Aktivitas vault</h3>
-                {aktivitasVault.map((item) => (
+                {vaultActivities.map((item) => (
                   <div key={item[0]} className="cv-dash-vault-activity__item">
                     <strong>{item[0]}</strong>
                     <span>{item[1]}</span>
@@ -396,6 +397,12 @@ function Dashboard() {
             </aside>
 
             <div className="cv-dash-vault-table-wrap">
+              {vaultFeedback ? (
+                <div className="cv-dash-vault-feedback" role="status" aria-live="polite">
+                  {vaultFeedback}
+                </div>
+              ) : null}
+
               <table className="cv-dash-vault-table">
                 <thead>
                   <tr>
@@ -407,33 +414,119 @@ function Dashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {daftarIdentitas.map((item) => (
-                    <tr key={`${item[0]}-${item[1]}`}>
-                      <td>{item[0]}</td>
-                      <td>{item[1]}</td>
-                      <td>{item[2]}</td>
+                  {filteredIdentityRows.map((item) => (
+                    <tr key={item.id}>
+                      <td>{item.type}</td>
+                      <td title={item.detail} className="cv-dash-vault-table__truncate">
+                        {item.detail}
+                      </td>
+                      <td title={item.relatedTo} className="cv-dash-vault-table__truncate">
+                        {item.relatedTo}
+                      </td>
                       <td>
-                        <span
-                          className={`cv-dash-status ${
-                            item[3] === 'Terverifikasi'
-                              ? 'is-success'
-                              : item[3] === 'Aktif'
-                                ? 'is-info'
-                                : 'is-warning'
-                          }`}
-                        >
-                          {item[3]}
+                        <span className={`cv-dash-status ${resolveStatusClass(item.status)}`}>
+                          {item.status}
                         </span>
                       </td>
-                      <td>{item[4]}</td>
+                      <td>{item.updatedAt}</td>
                     </tr>
                   ))}
+                  {filteredIdentityRows.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="cv-dash-vault-table__empty">
+                        Belum ada data identitas pada kategori ini.
+                      </td>
+                    </tr>
+                  ) : null}
                 </tbody>
               </table>
             </div>
           </div>
         </article>
       </section>
+
+      {isAddIdentityOpen ? (
+        <div className="cv-dash-modal-backdrop" role="presentation" onClick={handleCloseIdentityModal}>
+          <div
+            className="cv-dash-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cv-add-identity-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="cv-dash-modal__head">
+              <div>
+                <p className="cv-dash-eyebrow">Identity vault</p>
+                <h2 id="cv-add-identity-title">Tambah identitas mock</h2>
+              </div>
+              <button
+                type="button"
+                className="cv-dash-modal__close"
+                aria-label="Tutup modal tambah identitas"
+                onClick={handleCloseIdentityModal}
+              >
+                <i className="bi bi-x-lg" />
+              </button>
+            </div>
+
+            <form className="cv-dash-modal__form" onSubmit={handleIdentitySubmit}>
+              <label className="cv-dash-field">
+                <span>Tipe identitas</span>
+                <select
+                  name="category"
+                  value={identityForm.category}
+                  onChange={handleIdentityFormChange}
+                >
+                  <option value="">Pilih tipe identitas</option>
+                  {identityTypeOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+                {identityFormErrors.category ? (
+                  <small>{identityFormErrors.category}</small>
+                ) : null}
+              </label>
+
+              <label className="cv-dash-field">
+                <span>Nilai identitas</span>
+                <input
+                  type="text"
+                  name="detail"
+                  value={identityForm.detail}
+                  onChange={handleIdentityFormChange}
+                  placeholder="Contoh: nama@email.com atau +62 812..."
+                />
+                {identityFormErrors.detail ? <small>{identityFormErrors.detail}</small> : null}
+              </label>
+
+              <label className="cv-dash-field">
+                <span>Terkait dengan</span>
+                <input
+                  type="text"
+                  name="relatedTo"
+                  value={identityForm.relatedTo}
+                  onChange={handleIdentityFormChange}
+                  placeholder="Contoh: Pemulihan akun"
+                />
+                {identityFormErrors.relatedTo ? (
+                  <small>{identityFormErrors.relatedTo}</small>
+                ) : null}
+              </label>
+
+              <div className="cv-dash-modal__actions">
+                <button type="button" className="cv-dash-btn cv-dash-btn--ghost-dark" onClick={handleCloseIdentityModal}>
+                  Batal
+                </button>
+                <button type="submit" className="cv-dash-btn cv-dash-btn--soft">
+                  Simpan ke vault
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

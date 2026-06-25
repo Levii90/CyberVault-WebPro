@@ -1,13 +1,70 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { login } from '../../controllers/authController.js'
 
 function Login() {
   const navigate = useNavigate()
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  })
+  const [showPassword, setShowPassword] = useState(false)
+  const [errors, setErrors] = useState({})
+  const [submitError, setSubmitError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleLogin = (event) => {
+  const handleChange = (event) => {
+    const { name, value } = event.target
+
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }))
+
+    setErrors((current) => ({
+      ...current,
+      [name]: '',
+    }))
+    setSubmitError('')
+  }
+
+  const handleLogin = async (event) => {
     event.preventDefault()
-    login()
-    navigate('/dashboard')
+
+    const nextErrors = {
+      email: formData.email.trim() ? '' : 'Email wajib diisi.',
+      password: formData.password ? '' : 'Password wajib diisi.',
+    }
+
+    setErrors(nextErrors)
+    setSubmitError('')
+
+    if (nextErrors.email || nextErrors.password) {
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await login(formData)
+
+      if (!response.success) {
+        setErrors(response.errors || {})
+        setSubmitError(response.message || 'Login gagal.')
+        return
+      }
+
+      setFormData({
+        email: '',
+        password: '',
+      })
+      setShowPassword(false)
+      navigate('/dashboard', { replace: true })
+    } catch (error) {
+      setSubmitError(error.message || 'Terjadi kesalahan saat login.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -18,6 +75,8 @@ function Login() {
       </p>
 
       <form className="mt-4" onSubmit={handleLogin}>
+        {submitError ? <div className="alert alert-danger py-2">{submitError}</div> : null}
+
         <div className="cv-form-group">
           <label className="cv-form-label" htmlFor="email">
             Alamat Email
@@ -26,12 +85,16 @@ function Login() {
             <i className="bi bi-envelope" />
             <input
               id="email"
+              name="email"
               type="email"
               className="cv-form-control"
               placeholder="name@company.com"
-              required
+              value={formData.email}
+              onChange={handleChange}
+              aria-invalid={Boolean(errors.email)}
             />
           </div>
+          {errors.email ? <small className="text-danger d-block mt-1">{errors.email}</small> : null}
         </div>
 
         <div className="cv-form-group">
@@ -47,15 +110,27 @@ function Login() {
             <i className="bi bi-lock" />
             <input
               id="password"
-              type="password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
               className="cv-form-control"
-              placeholder="••••••••"
-              required
+              placeholder="Masukkan kata sandi"
+              value={formData.password}
+              onChange={handleChange}
+              aria-invalid={Boolean(errors.password)}
+              autoComplete="current-password"
             />
-            <button type="button" className="cv-input-action" aria-label="Lihat kata sandi">
-              <i className="bi bi-eye" />
+            <button
+              type="button"
+              className="cv-input-action"
+              aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Lihat kata sandi'}
+              onClick={() => setShowPassword((current) => !current)}
+            >
+              <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`} />
             </button>
           </div>
+          {errors.password ? (
+            <small className="text-danger d-block mt-1">{errors.password}</small>
+          ) : null}
         </div>
 
         <label className="cv-check-group cv-check-group--muted mb-4">
@@ -63,19 +138,27 @@ function Login() {
           <span>Ingat saya selama 30 hari</span>
         </label>
 
-        <button type="submit" className="cv-btn-primary">
-          Login
+        <button type="submit" className="cv-btn-primary" disabled={isSubmitting}>
+          {isSubmitting ? 'Memproses...' : 'Login'}
         </button>
       </form>
 
       <div className="cv-auth-divider">Atau lanjutkan dengan</div>
 
       <div className="cv-auth-socials">
-        <button type="button" className="cv-btn-social">
+        <button
+          type="button"
+          className="cv-btn-social"
+          onClick={() => setSubmitError('Login Google akan tersedia setelah backend auth aktif.')}
+        >
           <i className="bi bi-google" />
           Google
         </button>
-        <button type="button" className="cv-btn-social">
+        <button
+          type="button"
+          className="cv-btn-social"
+          onClick={() => setSubmitError('Login Microsoft akan tersedia setelah backend auth aktif.')}
+        >
           <i className="bi bi-microsoft" />
           Microsoft
         </button>

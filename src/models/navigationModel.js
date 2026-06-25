@@ -1,7 +1,7 @@
 export const menuUtama = [
   { label: 'Beranda', icon: 'bi-house-door', to: '/dashboard' },
   { label: 'Timeline', icon: 'bi-card-list', to: '/timeline' },
-  { label: 'Notifikasi', icon: 'bi-bell', to: '/notifikasi', badge: '3' },
+  { label: 'Notifikasi', icon: 'bi-bell', to: '/notifikasi' },
   { label: 'Akun', icon: 'bi-person', to: '/akun' },
 ]
 
@@ -17,5 +17,5 @@ export const menuFitur = [
 export const menuBawah = [
   { label: 'Pengaturan', icon: 'bi-gear', to: '/pengaturan' },
   { label: 'Pusat Bantuan', icon: 'bi-info-circle', to: '/pusat-bantuan' },
-  { label: 'Keluar', icon: 'bi-box-arrow-right', to: '/keluar' },
+  { label: 'Keluar', icon: 'bi-box-arrow-right', to: '/logout' },
 ]

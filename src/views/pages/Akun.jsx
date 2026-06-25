@@ -1,408 +1,619 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import profileIllustration from '../../assets/hero_gaia-1.png'
-import '../../styles/AccountPage.css'
+import { getStoredUser } from '../../controllers/authController.js'
+import {
+  getAccountActivities,
+  getAccountProfile,
+  getDeviceSessions,
+  getProfileCompletionItems,
+  getSecuritySummary,
+  revokeDeviceSession,
+  updateAccountProfile,
+} from '../../services/account/accountService.js'
+import '../../styles/AkunPage.css'
 
-const profile = {
-  name: 'Maman Vyndy',
-  email: 'maman.vyndy@gmail.com',
-  role: 'Member Aktif',
-  joinedAt: 'Bergabung sejak 24 Desember 2024',
+const INITIAL_PROFILE_FORM = {
+  fullName: '',
+  username: '',
+  email: '',
+  bio: '',
+  phone: '',
+  institution: '',
 }
 
-const securitySummary = [
-  {
-    title: 'Password',
-    status: 'Kuat',
-    detail: 'Terakhir diubah 27 Mei 2024',
-    action: 'Ubah Password',
-    icon: 'bi-key',
-  },
-  {
-    title: 'Two-Factor Authentication',
-    status: 'Aktif',
-    detail: 'Google Authenticator',
-    action: 'Kelola 2FA',
-    icon: 'bi-shield-lock',
-  },
-  {
-    title: 'Email Pemulihan',
-    status: 'Terverifikasi',
-    detail: 'maman.vyndy@gmail.com',
-    action: 'Ubah Email',
-    icon: 'bi-envelope-check',
-  },
-  {
-    title: 'Nomor Pemulihan',
-    status: 'Terverifikasi',
-    detail: '+62 812-3456-7890',
-    action: 'Ubah Nomor',
-    icon: 'bi-phone',
-  },
-]
+function buildInitialProfileFromStoredUser() {
+  const storedUser = getStoredUser()
 
-const identityItems = [
-  {
-    id: 1,
-    category: 'Email',
-    type: 'Email Utama',
-    detail: 'maman.vyndy@gmail.com',
-    relatedTo: 'Akun CyberVault',
-    status: 'Terverifikasi',
-    checkedAt: '29 Apr 2026',
-    icon: 'bi-envelope',
-  },
-  {
-    id: 2,
-    category: 'Email',
-    type: 'Email Cadangan',
-    detail: 'maman.backup@gmail.com',
-    relatedTo: 'Pemulihan Akun',
-    status: 'Terverifikasi',
-    checkedAt: '26 Apr 2026',
-    icon: 'bi-envelope-paper',
-  },
-  {
-    id: 3,
-    category: 'Nomor Telepon',
-    type: 'Nomor Telepon Utama',
-    detail: '+62 812-3456-7890',
-    relatedTo: 'WhatsApp',
-    status: 'Terverifikasi',
-    checkedAt: '23 Apr 2026',
-    icon: 'bi-phone',
-  },
-  {
-    id: 4,
-    category: 'Nomor Telepon',
-    type: 'Nomor Telepon Cadangan',
-    detail: '+62 856-0000-0000',
-    relatedTo: 'Pemulihan Akun',
-    status: 'Pending',
-    checkedAt: '22 Apr 2026',
-    icon: 'bi-phone-vibrate',
-  },
-  {
-    id: 5,
-    category: 'Akun Online',
-    type: 'Instagram',
-    detail: '@maman.vyndy',
-    relatedTo: 'Media Sosial',
-    status: 'Aktif',
-    checkedAt: '18 Apr 2026',
-    icon: 'bi-instagram',
-  },
-  {
-    id: 6,
-    category: 'Dokumen Penting',
-    type: 'KTP',
-    detail: '3271 xxxx xxxx xxxx',
-    relatedTo: 'Verifikasi Identitas',
-    status: 'Terverifikasi',
-    checkedAt: '14 Apr 2026',
-    icon: 'bi-file-earmark-lock',
-  },
-]
+  if (!storedUser) {
+    return null
+  }
 
-const activityItems = [
-  { title: 'Email Utama Diperbarui', time: '26 Mei 2026, 10:30' },
-  { title: '2FA Diaktifkan', time: '25 Mei 2026, 15:00' },
-  { title: 'Password Diubah', time: '20 Mei 2026, 13:45' },
-]
-
-const filterIcons = {
-  'Semua Identitas': 'bi-grid',
-  Email: 'bi-envelope',
-  'Nomor Telepon': 'bi-phone',
-  'Akun Online': 'bi-globe2',
-  'Dokumen Penting': 'bi-file-earmark-text',
-  'Kontak Darurat': 'bi-person-heart',
+  return {
+    fullName: storedUser.name || '',
+    username: storedUser.username || '',
+    role: storedUser.role || 'User',
+    email: storedUser.email || '',
+    bio: storedUser.bio || '',
+    phone: storedUser.phone || '',
+    institution: storedUser.institution || '',
+    joinedAt: storedUser.created_at ? String(storedUser.created_at).slice(0, 10) : '',
+  }
 }
 
-const statusClassNames = {
-  Terverifikasi: 'is-success',
-  Aktif: 'is-info',
-  Pending: 'is-warning',
-  'Perlu Dicek': 'is-danger',
-}
+function Akun() {
+  const navigate = useNavigate()
+  const [profile, setProfile] = useState(() => buildInitialProfileFromStoredUser())
+  const [security, setSecurity] = useState(null)
+  const [sessions, setSessions] = useState([])
+  const [activities, setActivities] = useState([])
+  const [profileCompletion, setProfileCompletion] = useState([])
+  const [selectedActivity, setSelectedActivity] = useState(null)
+  const [profileForm, setProfileForm] = useState(INITIAL_PROFILE_FORM)
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
+  const [validationErrors, setValidationErrors] = useState({})
+  const [feedbackMessage, setFeedbackMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
 
-function AccountPage() {
-  const [activeCategory, setActiveCategory] = useState('Semua Identitas')
+  useEffect(() => {
+    async function loadAccountPage() {
+      setIsLoading(true)
 
-  const categories = useMemo(() => {
-    const baseCategories = [
-      'Semua Identitas',
-      'Email',
-      'Nomor Telepon',
-      'Akun Online',
-      'Dokumen Penting',
-      'Kontak Darurat',
-    ]
+      try {
+        const [
+          profileResponse,
+          securityResponse,
+          sessionsResponse,
+          activitiesResponse,
+          completionResponse,
+        ] = await Promise.all([
+          getAccountProfile(),
+          getSecuritySummary(),
+          getDeviceSessions(),
+          getAccountActivities(),
+          getProfileCompletionItems(),
+        ])
 
-    return baseCategories.map((name) => ({
-      name,
-      icon: filterIcons[name],
-      count:
-        name === 'Semua Identitas'
-          ? identityItems.length
-          : identityItems.filter((item) => item.category === name).length,
-    }))
-  }, [])
-
-  const filteredItems = useMemo(() => {
-    if (activeCategory === 'Semua Identitas') {
-      return identityItems
+        setProfile(profileResponse.data || null)
+        setProfileForm(profileResponse.data || INITIAL_PROFILE_FORM)
+        setSecurity(securityResponse.data || null)
+        setSessions(sessionsResponse.data || [])
+        setActivities(activitiesResponse.data || [])
+        setProfileCompletion(completionResponse.data || [])
+        setSelectedActivity((activitiesResponse.data || [])[0] || null)
+      } catch (error) {
+        if (error?.status === 401) {
+          navigate('/login', { replace: true })
+        } else {
+          setFeedbackMessage(error?.message || 'Gagal memuat data akun.')
+        }
+      } finally {
+        setIsLoading(false)
+      }
     }
 
-    return identityItems.filter((item) => item.category === activeCategory)
-  }, [activeCategory])
+    loadAccountPage()
+  }, [navigate])
+
+  const completedProfileCount = useMemo(
+    () => profileCompletion.filter((item) => item.completed).length,
+    [profileCompletion],
+  )
+
+  function handleOpenEditMode() {
+    setProfileForm({
+      fullName: profile?.fullName || '',
+      username: profile?.username || '',
+      email: profile?.email || '',
+      bio: profile?.bio || '',
+      phone: profile?.phone || '',
+      institution: profile?.institution || '',
+    })
+    setIsEditingProfile(true)
+    setValidationErrors({})
+    setFeedbackMessage('')
+  }
+
+  function validateProfileForm() {
+    const nextErrors = {}
+    const fullName = String(profileForm.fullName || '').trim()
+    const username = String(profileForm.username || '').trim()
+    const email = String(profileForm.email || '').trim()
+    const bio = String(profileForm.bio || '').trim()
+    const phone = String(profileForm.phone || '').trim()
+    const institution = String(profileForm.institution || '').trim()
+
+    if (!fullName) {
+      nextErrors.fullName = 'Nama lengkap wajib diisi.'
+    }
+
+    if (!username) {
+      nextErrors.username = 'Username wajib diisi.'
+    } else if (username.length < 3) {
+      nextErrors.username = 'Username minimal 3 karakter.'
+    }
+
+    if (!email) {
+      nextErrors.email = 'Email wajib diisi.'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      nextErrors.email = 'Format email belum valid.'
+    }
+
+    if (bio.length > 160) {
+      nextErrors.bio = 'Bio maksimal 160 karakter.'
+    }
+
+    if (phone.length > 30) {
+      nextErrors.phone = 'Nomor telepon maksimal 30 karakter.'
+    }
+
+    if (institution.length > 150) {
+      nextErrors.institution = 'Institusi maksimal 150 karakter.'
+    }
+
+    return nextErrors
+  }
+
+  async function handleSaveProfile() {
+    const nextErrors = validateProfileForm()
+
+    if (Object.keys(nextErrors).length > 0) {
+      setValidationErrors(nextErrors)
+      return
+    }
+
+    const response = await updateAccountProfile(profileForm)
+
+    if (!response.success) {
+      setValidationErrors((response.errors && Object.keys(response.errors).length > 0)
+        ? {
+            fullName: response.errors.name || '',
+            username: response.errors.username || '',
+            bio: response.errors.bio || '',
+            phone: response.errors.phone || '',
+            institution: response.errors.institution || '',
+          }
+        : {})
+      setFeedbackMessage(response.message || 'Gagal memperbarui profil.')
+
+      if (response.status === 401) {
+        navigate('/login', { replace: true })
+      }
+
+      return
+    }
+
+    setProfile(response.data)
+    setProfileForm(response.data)
+    setIsEditingProfile(false)
+    setValidationErrors({})
+    setFeedbackMessage(response.message)
+  }
+
+  function handleCancelEdit() {
+    setProfileForm({
+      fullName: profile?.fullName || '',
+      username: profile?.username || '',
+      email: profile?.email || '',
+      bio: profile?.bio || '',
+      phone: profile?.phone || '',
+      institution: profile?.institution || '',
+    })
+    setIsEditingProfile(false)
+    setValidationErrors({})
+    setFeedbackMessage('Perubahan profil dibatalkan.')
+  }
+
+  async function handleRevokeSession(session) {
+    if (session.current) {
+      setFeedbackMessage('Current session tidak dapat direvoke dari halaman ini.')
+      return
+    }
+
+    const response = await revokeDeviceSession(session.id)
+
+    setSessions((currentSessions) =>
+      currentSessions.filter((item) => item.id !== response.data.sessionId),
+    )
+    setSecurity((currentSecurity) =>
+      currentSecurity
+        ? {
+            ...currentSecurity,
+            activeSessions: Math.max(currentSecurity.activeSessions - 1, 1),
+          }
+        : currentSecurity,
+    )
+    setFeedbackMessage(response.message)
+  }
 
   return (
-    <section className="cv-account-page">
-      <header className="cv-account-page__header">
-        <div>
-          <p className="cv-account-page__eyebrow">Akun</p>
+    <div className="cv-account-hub">
+      <section className="cv-account-hero">
+        <div className="cv-account-hero__copy">
+          <span className="cv-account-eyebrow">Profile Center</span>
           <h1>Akun Saya</h1>
-          <p className="cv-account-page__subtitle">
-            Kelola profil, keamanan akun, dan data identitas digital anda
+          <p>
+            Kelola profil demo, ringkasan keamanan akun, session perangkat, dan
+            aktivitas terbaru tanpa menampilkan password, token, atau data sensitif.
           </p>
         </div>
-      </header>
 
-      <div className="cv-account-overview">
-        <article className="cv-account-card cv-account-profile">
-          <div className="cv-account-profile__avatar">
-            <img src={profileIllustration} alt={profile.name} />
-          </div>
-
-          <div className="cv-account-profile__body">
-            <div className="cv-account-profile__heading">
-              <div>
-                <h2>{profile.name}</h2>
-                <p>{profile.email}</p>
-              </div>
-              <span className="cv-account-pill">{profile.role}</span>
-            </div>
-
-            <p className="cv-account-profile__meta">{profile.joinedAt}</p>
-
-            <button type="button" className="cv-account-inline-button">
-              Edit Profil
-            </button>
-          </div>
-        </article>
-
-        <article className="cv-account-card cv-account-security">
-          <div className="cv-account-card__heading">
+        {profile ? (
+          <div className="cv-account-hero__meta">
             <div>
-              <p className="cv-account-card__kicker">Proteksi</p>
-              <h2>Ringkasan Keamanan Akun</h2>
+              <span>Role</span>
+              <strong>{profile.role}</strong>
+            </div>
+            <div>
+              <span>Joined</span>
+              <strong>{profile.joinedAt}</strong>
+            </div>
+            <div>
+              <span>Completion</span>
+              <strong>
+                {completedProfileCount}/{profileCompletion.length}
+              </strong>
             </div>
           </div>
+        ) : null}
+      </section>
 
-          <div className="cv-account-security__grid">
-            {securitySummary.map((item) => (
-              <div key={item.title} className="cv-account-security__item">
-                <div className="cv-account-security__icon">
-                  <i className={`bi ${item.icon}`} />
-                </div>
-                <div className="cv-account-security__content">
-                  <span className="cv-account-security__label">{item.title}</span>
-                  <strong>{item.status}</strong>
-                  <p>{item.detail}</p>
-                  <button type="button" className="cv-account-text-button">
-                    {item.action}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-      </div>
-
-      <section className="cv-account-vault">
-        <div className="cv-account-vault__header">
-          <div>
-            <p className="cv-account-vault__kicker">Brankas Identitas</p>
-            <h2>Digital Identity Vault</h2>
-            <p>Kelola dan pantau identitas digital anda dengan aman</p>
-          </div>
-
-          <button type="button" className="cv-account-primary-button">
-            <i className="bi bi-plus-lg" />
-            Tambah Identitas
-          </button>
+      {feedbackMessage ? (
+        <div className="cv-account-feedback" role="status">
+          {feedbackMessage}
         </div>
+      ) : null}
 
-        <div className="cv-account-vault__content">
-          <aside className="cv-account-card cv-account-filters">
-            <div className="cv-account-filter-list">
-              {categories.map((category) => (
-                <button
-                  key={category.name}
-                  type="button"
-                  className={`cv-account-filter-item${
-                    activeCategory === category.name ? ' is-active' : ''
-                  }`}
-                  onClick={() => setActiveCategory(category.name)}
-                >
-                  <span className="cv-account-filter-item__left">
-                    <i className={`bi ${category.icon}`} />
-                    {category.name}
-                  </span>
-                  <span className="cv-account-filter-item__count">{category.count}</span>
-                </button>
-              ))}
-            </div>
+      {isLoading ? (
+        <div className="cv-account-empty-state">
+          <i className="bi bi-arrow-repeat" aria-hidden="true" />
+          <h3>Memuat profil akun...</h3>
+          <p>Data akun demo sedang disiapkan untuk halaman ini.</p>
+        </div>
+      ) : null}
 
-            <div className="cv-account-filter-note">
-              <div className="cv-account-filter-note__icon">
-                <i className="bi bi-shield-fill-check" />
+      {!isLoading ? (
+        <>
+          <section className="cv-account-main-grid">
+            <article className="cv-account-card cv-account-card--profile">
+              <div className="cv-account-card__head">
+                <div>
+                  <span className="cv-account-card__kicker">Profil</span>
+                  <h2>Profile Summary</h2>
+                </div>
+                {!isEditingProfile ? (
+                  <button
+                    type="button"
+                    className="cv-account-primary-button"
+                    onClick={handleOpenEditMode}
+                  >
+                    Edit Profil
+                  </button>
+                ) : null}
               </div>
-              <p>
-                Semua data disimpan secara aman dan hanya dapat diakses oleh pemilik
-                akun.
-              </p>
-            </div>
-          </aside>
 
-          <article className="cv-account-card cv-account-table-card">
-            <div className="cv-account-card__heading">
-              <div>
-                <h3>Daftar Identitas Digital</h3>
-              </div>
-              <div className="cv-account-table-toolbar">
-                <button type="button" className="cv-account-table-tab is-active">
-                  Semua Identitas
-                </button>
-                <span className="cv-account-table-card__count">
-                  {filteredItems.length} data
-                </span>
-              </div>
-            </div>
+              <div className="cv-account-profile-card">
+                <div className="cv-account-profile-card__visual">
+                  <img src={profileIllustration} alt={profile?.fullName || 'Profil akun'} />
+                </div>
 
-            <div className="cv-account-table-wrap">
-              <table className="cv-account-table">
-                <thead>
-                  <tr>
-                    <th>Jenis Identitas</th>
-                    <th>Detail</th>
-                    <th>Terkait Dengan</th>
-                    <th>Status</th>
-                    <th>Terakhir Diperiksa</th>
-                    <th>Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredItems.map((item) => (
-                    <tr key={item.id}>
-                      <td>
-                        <div className="cv-account-table__identity">
-                          <span className="cv-account-table__icon">
-                            <i className={`bi ${item.icon}`} />
-                          </span>
-                          <span>{item.type}</span>
-                        </div>
-                      </td>
-                      <td>{item.detail}</td>
-                      <td>{item.relatedTo}</td>
-                      <td>
-                        <span
-                          className={`cv-account-status ${
-                            statusClassNames[item.status] ?? 'is-info'
-                          }`}
-                        >
-                          {item.status}
+                {!isEditingProfile ? (
+                  <div className="cv-account-profile-card__content">
+                    <h3>{profile?.fullName}</h3>
+                    <p>@{profile?.username}</p>
+                    <div className="cv-account-tag-row">
+                      <span className="cv-account-tag">{profile?.email}</span>
+                      <span className="cv-account-tag">{profile?.role}</span>
+                    </div>
+                    <p className="cv-account-profile-card__bio">{profile?.bio}</p>
+                  </div>
+                ) : (
+                  <div className="cv-account-edit-form">
+                    <div className="cv-account-field">
+                      <label htmlFor="account-full-name">Nama Lengkap</label>
+                      <input
+                        id="account-full-name"
+                        value={profileForm.fullName}
+                        onChange={(event) =>
+                          setProfileForm((current) => ({
+                            ...current,
+                            fullName: event.target.value,
+                          }))
+                        }
+                      />
+                      {validationErrors.fullName ? (
+                        <span className="cv-account-field__error">
+                          {validationErrors.fullName}
                         </span>
-                      </td>
-                      <td>{item.checkedAt}</td>
-                      <td>
-                        <div className="cv-account-table__actions">
-                          <button type="button" aria-label={`Edit ${item.type}`}>
-                            <i className="bi bi-pencil" />
-                          </button>
-                          <button type="button" aria-label={`Hapus ${item.type}`}>
-                            <i className="bi bi-trash3" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                  {filteredItems.length === 0 ? (
-                    <tr>
-                      <td colSpan="6" className="cv-account-table__empty">
-                        Belum ada data pada kategori ini.
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
-            </div>
+                      ) : null}
+                    </div>
 
-            <div className="cv-account-table-pagination">
-              <button type="button" aria-label="Halaman 1" className="is-active">
-                1
-              </button>
-              <button type="button" aria-label="Halaman 2">
-                2
-              </button>
-              <button type="button" aria-label="Halaman selanjutnya">
-                <i className="bi bi-chevron-right" />
-              </button>
-            </div>
-          </article>
+                    <div className="cv-account-field">
+                      <label htmlFor="account-username">Username</label>
+                      <input
+                        id="account-username"
+                        value={profileForm.username}
+                        onChange={(event) =>
+                          setProfileForm((current) => ({
+                            ...current,
+                            username: event.target.value,
+                          }))
+                        }
+                      />
+                      {validationErrors.username ? (
+                        <span className="cv-account-field__error">
+                          {validationErrors.username}
+                        </span>
+                      ) : null}
+                    </div>
 
-          <aside className="cv-account-sidepanels">
-            <article className="cv-account-card cv-account-score">
-              <div className="cv-account-card__heading">
-                <div>
-                  <p className="cv-account-card__kicker">Insight</p>
-                  <h3>Skor Keamanan Identitas</h3>
-                </div>
-              </div>
+                    <div className="cv-account-field">
+                      <label htmlFor="account-email">Email</label>
+                      <input
+                        id="account-email"
+                        type="email"
+                        value={profileForm.email}
+                        onChange={(event) =>
+                          setProfileForm((current) => ({
+                            ...current,
+                            email: event.target.value,
+                          }))
+                        }
+                      />
+                      {validationErrors.email ? (
+                        <span className="cv-account-field__error">
+                          {validationErrors.email}
+                        </span>
+                      ) : null}
+                    </div>
 
-              <div className="cv-account-score__badge">
-                <i className="bi bi-shield-check" />
-              </div>
-              <div className="cv-account-score__value">80/100</div>
-              <span className="cv-account-score__label">Baik</span>
-              <p>
-                Tingkatkan keamanan identitas anda dengan memperbarui informasi secara
-                berkala dan aktifkan 2FA di semua akun.
-              </p>
-              <button type="button" className="cv-account-primary-button is-secondary">
-                Lihat Rekomendasi
-              </button>
-            </article>
+                    <div className="cv-account-field">
+                      <label htmlFor="account-bio">Bio</label>
+                      <textarea
+                        id="account-bio"
+                        rows={4}
+                        value={profileForm.bio}
+                        onChange={(event) =>
+                          setProfileForm((current) => ({
+                            ...current,
+                            bio: event.target.value,
+                          }))
+                        }
+                      />
+                      {validationErrors.bio ? (
+                        <span className="cv-account-field__error">
+                          {validationErrors.bio}
+                        </span>
+                      ) : null}
+                    </div>
 
-            <article className="cv-account-card cv-account-activity">
-              <div className="cv-account-card__heading">
-                <div>
-                  <p className="cv-account-card__kicker">Timeline</p>
-                  <h3>Aktivitas Terbaru</h3>
-                </div>
-              </div>
+                    <div className="cv-account-field">
+                      <label htmlFor="account-phone">Nomor Telepon</label>
+                      <input
+                        id="account-phone"
+                        value={profileForm.phone}
+                        onChange={(event) =>
+                          setProfileForm((current) => ({
+                            ...current,
+                            phone: event.target.value,
+                          }))
+                        }
+                      />
+                      {validationErrors.phone ? (
+                        <span className="cv-account-field__error">
+                          {validationErrors.phone}
+                        </span>
+                      ) : null}
+                    </div>
 
-              <div className="cv-account-activity__list">
-                {activityItems.map((item) => (
-                  <div key={`${item.title}-${item.time}`} className="cv-account-activity__item">
-                    <span className="cv-account-activity__dot" aria-hidden="true" />
-                    <div>
-                      <strong>{item.title}</strong>
-                      <p>{item.time}</p>
+                    <div className="cv-account-field">
+                      <label htmlFor="account-institution">Institusi</label>
+                      <input
+                        id="account-institution"
+                        value={profileForm.institution}
+                        onChange={(event) =>
+                          setProfileForm((current) => ({
+                            ...current,
+                            institution: event.target.value,
+                          }))
+                        }
+                      />
+                      {validationErrors.institution ? (
+                        <span className="cv-account-field__error">
+                          {validationErrors.institution}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <div className="cv-account-action-row">
+                      <button
+                        type="button"
+                        className="cv-account-primary-button"
+                        onClick={handleSaveProfile}
+                      >
+                        Simpan Profil
+                      </button>
+                      <button
+                        type="button"
+                        className="cv-account-secondary-button"
+                        onClick={handleCancelEdit}
+                      >
+                        Batal
+                      </button>
                     </div>
                   </div>
-                ))}
+                )}
+              </div>
+            </article>
+
+            <article className="cv-account-card">
+              <div className="cv-account-card__head">
+                <div>
+                  <span className="cv-account-card__kicker">Keamanan</span>
+                  <h2>Security Summary</h2>
+                </div>
+                <button
+                  type="button"
+                  className="cv-account-secondary-button"
+                  onClick={() => navigate('/pengaturan')}
+                >
+                  Kelola Pengaturan Keamanan
+                </button>
               </div>
 
-              <button type="button" className="cv-account-text-button">
-                Lihat Semua Aktivitas
-              </button>
+              {security ? (
+                <div className="cv-account-security-grid">
+                  <article className="cv-account-security-item">
+                    <span>Security Score</span>
+                    <strong>{security.securityScore}/100</strong>
+                    <small>Ringkasan proteksi akun demo</small>
+                  </article>
+                  <article className="cv-account-security-item">
+                    <span>MFA</span>
+                    <strong>{security.mfaEnabled ? 'Aktif' : 'Belum Aktif'}</strong>
+                    <small>Status autentikasi dua faktor</small>
+                  </article>
+                  <article className="cv-account-security-item">
+                    <span>Recovery Email</span>
+                    <strong>{security.recoveryEmailVerified ? 'Terverifikasi' : 'Belum Verifikasi'}</strong>
+                    <small>Alamat pemulihan akun</small>
+                  </article>
+                  <article className="cv-account-security-item">
+                    <span>Password Last Changed</span>
+                    <strong>{security.passwordLastChanged}</strong>
+                    <small>Informasi mock, tanpa menampilkan password</small>
+                  </article>
+                </div>
+              ) : null}
+
+              <div className="cv-account-completion">
+                <h3>Checklist Profil</h3>
+                <div className="cv-account-completion__list">
+                  {profileCompletion.map((item) => (
+                    <div key={item.id} className="cv-account-completion__item">
+                      <i
+                        className={`bi ${
+                          item.completed ? 'bi-check2-circle' : 'bi-circle'
+                        }`}
+                        aria-hidden="true"
+                      />
+                      <span>{item.title}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </article>
-          </aside>
-        </div>
-      </section>
-    </section>
+          </section>
+
+          <section className="cv-account-layout-grid">
+            <article className="cv-account-card">
+              <div className="cv-account-card__head">
+                <div>
+                  <span className="cv-account-card__kicker">Session</span>
+                  <h2>Device & Session</h2>
+                </div>
+                <span className="cv-account-count-pill">
+                  {security?.activeSessions || sessions.length} active
+                </span>
+              </div>
+
+              <div className="cv-account-session-list">
+                {sessions.map((session) => (
+                  <article key={session.id} className="cv-account-session-item">
+                    <div className="cv-account-session-item__main">
+                      <div>
+                        <h3>{session.device}</h3>
+                        <p>
+                          {session.location} • {session.lastActive}
+                        </p>
+                      </div>
+                      <div className="cv-account-tag-row">
+                        {session.current ? (
+                          <span className="cv-account-tag is-info">Current</span>
+                        ) : null}
+                        {session.trusted ? (
+                          <span className="cv-account-tag is-success">Trusted</span>
+                        ) : (
+                          <span className="cv-account-tag is-warning">Review</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="cv-account-secondary-button"
+                      onClick={() => handleRevokeSession(session)}
+                    >
+                      Revoke Session
+                    </button>
+                  </article>
+                ))}
+              </div>
+            </article>
+
+            <div className="cv-account-side-column">
+              <article className="cv-account-card">
+                <div className="cv-account-card__head">
+                  <div>
+                    <span className="cv-account-card__kicker">Aktivitas</span>
+                    <h2>Account Activity</h2>
+                  </div>
+                </div>
+
+                <div className="cv-account-activity-list">
+                  {activities.map((activity) => (
+                    <button
+                      key={activity.id}
+                      type="button"
+                      className={`cv-account-activity-item${
+                        selectedActivity?.id === activity.id ? ' is-active' : ''
+                      }`}
+                      onClick={() => setSelectedActivity(activity)}
+                    >
+                      <strong>{activity.title}</strong>
+                      <span>{activity.createdAt}</span>
+                    </button>
+                  ))}
+                </div>
+              </article>
+
+              <article className="cv-account-card">
+                <div className="cv-account-card__head">
+                  <div>
+                    <span className="cv-account-card__kicker">Detail</span>
+                    <h2>Activity Preview</h2>
+                  </div>
+                </div>
+
+                {selectedActivity ? (
+                  <div className="cv-account-activity-preview">
+                    <h3>{selectedActivity.title}</h3>
+                    <p>{selectedActivity.description}</p>
+                    <span>{selectedActivity.createdAt}</span>
+                    {selectedActivity.relatedRoute ? (
+                      <button
+                        type="button"
+                        className="cv-account-primary-button"
+                        onClick={() => navigate(selectedActivity.relatedRoute)}
+                      >
+                        {selectedActivity.actionLabel || 'Buka Aktivitas'}
+                      </button>
+                    ) : null}
+                  </div>
+                ) : (
+                  <div className="cv-account-empty-state cv-account-empty-state--compact">
+                    <i className="bi bi-clock-history" aria-hidden="true" />
+                    <h3>Tidak ada aktivitas terpilih</h3>
+                    <p>Pilih salah satu aktivitas untuk melihat detailnya.</p>
+                  </div>
+                )}
+              </article>
+            </div>
+          </section>
+        </>
+      ) : null}
+    </div>
   )
 }
 
-export default AccountPage
+export default Akun

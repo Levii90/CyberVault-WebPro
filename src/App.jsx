@@ -1,5 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { isAuthenticated } from './controllers/authController.js'
 import { dashboardRoutes, GuestRoutes, ProtectedRoutes } from './controllers/routeController.jsx'
+import { getDefaultAppRoute, getRouterBasename } from './config/routerConfig.js'
 import AuthLayout from './views/layouts/AuthLayout.jsx'
 import DashboardLayout from './views/layouts/DashboardLayout.jsx'
 import Login from './views/pages/Login.jsx'
@@ -9,10 +11,13 @@ import ResetPassword from './views/pages/ResetPassword.jsx'
 import TidakDitemukanPage from './views/pages/TidakDitemukanPage.jsx'
 
 function App() {
+  const defaultRoute = getDefaultAppRoute(isAuthenticated())
+  const routerBasename = getRouterBasename()
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={routerBasename}>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to={defaultRoute} replace />} />
 
         <Route element={<GuestRoutes />}>
           <Route element={<AuthLayout />}>

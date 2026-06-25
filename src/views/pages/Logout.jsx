@@ -6,8 +6,21 @@ function Logout() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    logout()
-    navigate('/login', { replace: true })
+    let isActive = true
+
+    async function performLogout() {
+      await logout()
+
+      if (isActive) {
+        navigate('/login', { replace: true })
+      }
+    }
+
+    performLogout()
+
+    return () => {
+      isActive = false
+    }
   }, [navigate])
 
   return null

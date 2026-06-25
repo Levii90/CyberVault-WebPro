@@ -1,11 +1,3 @@
-import axios from 'axios'
+import httpClient from '../../services/httpClient.js'
 
-const api = axios.create({
-  baseURL: 'http://localhost',
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  },
-})
-
-export default api
+export default httpClient

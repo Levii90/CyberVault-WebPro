@@ -1,0 +1,237 @@
+:root {
+  --cv-layout-shell-radius: 28px;
+  --cv-layout-card-radius: 24px;
+  --cv-layout-shell-padding: clamp(18px, 2.4vw, 24px);
+  --cv-layout-shell-gap: 18px;
+  --cv-layout-app-bg: linear-gradient(180deg, #eef3f8 0%, #f7f9fc 100%);
+  --cv-layout-shell-bg:
+    radial-gradient(circle at top right, rgba(125, 211, 252, 0.24), transparent 28%),
+    linear-gradient(135deg, #0d3b66 0%, #145f9c 58%, #0b6cae 100%);
+  --cv-layout-shell-shadow: 0 18px 40px rgba(8, 47, 73, 0.16);
+  --cv-layout-card-shadow: 0 14px 30px rgba(15, 23, 42, 0.1);
+  --cv-layout-card-border: 1px solid rgba(15, 90, 150, 0.1);
+  --cv-layout-card-bg: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  --cv-layout-heading: #14324f;
+  --cv-layout-muted: #56718c;
+}
+
+:where(
+  .cv-dashboard-v2,
+  .cv-timeline-page,
+  .cv-education-page,
+  .cv-incident-page,
+  .cv-info-page,
+  .cv-cert-page,
+  .cv-forum-page,
+  .cv-assessment-page,
+  .cv-notification-center,
+  .cv-account-hub,
+  .cv-settings-page,
+  .cv-help-page
+) {
+  gap: 20px;
+}
+
+:where(.cv-dashboard-layout, .cv-dashboard-shell, .cv-dashboard-main, .cv-main) {
+  background: var(--cv-layout-app-bg) !important;
+}
+
+:where(
+  .cv-dash-hero,
+  .cv-timeline-hero,
+  .cv-education-hero-card,
+  .cv-incident-page__hero,
+  .cv-info-hero,
+  .cv-cert-hero,
+  .cv-forum-hero,
+  .cv-assessment-hero,
+  .cv-notification-hero,
+  .cv-account-hero,
+  .cv-settings-hero,
+  .cv-help-hero
+) {
+  border-radius: var(--cv-layout-shell-radius);
+  box-shadow: var(--cv-layout-shell-shadow);
+}
+
+:where(
+  .cv-dash-metrics,
+  .cv-dash-quick-actions,
+  .cv-dash-main-grid,
+  .cv-dash-main-grid--secondary,
+  .cv-timeline-summary-grid,
+  .cv-roadmap-section,
+  .cv-timeline-bottom-grid,
+  .cv-education-stats-grid,
+  .cv-education-bottom-grid,
+  .cv-incident-steps,
+  .cv-incident-layout,
+  .cv-info-board,
+  .cv-info-summary-grid,
+  .cv-info-content,
+  .cv-assessment-overview-grid,
+  .cv-notification-summary-grid,
+  .cv-notification-layout,
+  .cv-account-main-grid,
+  .cv-account-layout-grid,
+  .cv-settings-layout,
+  .cv-help-category-section,
+  .cv-help-main-grid,
+  .cv-help-page > .cv-help-panel
+) {
+  padding: var(--cv-layout-shell-padding);
+  border-radius: var(--cv-layout-shell-radius);
+  background: var(--cv-layout-shell-bg) !important;
+  box-shadow: var(--cv-layout-shell-shadow) !important;
+}
+
+.cv-education-page .cv-education-section-card {
+  background: var(--cv-layout-shell-bg) !important;
+  border-radius: var(--cv-layout-shell-radius) !important;
+  box-shadow: var(--cv-layout-shell-shadow) !important;
+}
+
+.cv-help-page > .cv-help-panel {
+  border: 0;
+}
+
+:where(
+  .cv-dash-metric-card,
+  .cv-dash-action-card,
+  .cv-dash-panel,
+  .cv-timeline-summary-card,
+  .cv-roadmap-card,
+  .cv-timeline-stat-card,
+  .cv-timeline-achievement-card,
+  .cv-achievement-item,
+  .cv-info-list-section,
+  .cv-info-preview-panel,
+  .cv-assessment-panel,
+  .cv-notification-panel,
+  .cv-account-card,
+  .cv-settings-sidebar,
+  .cv-settings-card,
+  .cv-help-panel
+) {
+  border: var(--cv-layout-card-border);
+  border-radius: var(--cv-layout-card-radius);
+  background: var(--cv-layout-card-bg);
+  box-shadow: var(--cv-layout-card-shadow);
+}
+
+:where(
+  .cv-info-section__head h2,
+  .cv-info-preview-panel h2,
+  .cv-notification-panel__head h2,
+  .cv-account-card__head h2,
+  .cv-settings-sidebar__head h2,
+  .cv-settings-card__head h3,
+  .cv-help-section-head h2,
+  .cv-timeline-page .cv-section-head h3,
+  .cv-roadmap-section h3,
+  .cv-dash-section-head h2
+) {
+  color: var(--cv-layout-heading);
+}
+
+:where(
+  .cv-info-section__head span,
+  .cv-notification-panel__head span,
+  .cv-account-card__kicker,
+  .cv-settings-sidebar__head p,
+  .cv-settings-card__head p,
+  .cv-help-section-head span
+) {
+  color: var(--cv-layout-muted);
+}
+
+.cv-info-board,
+.cv-info-summary-grid,
+.cv-info-content,
+.cv-notification-summary-grid,
+.cv-help-category-section,
+.cv-help-page > .cv-help-panel,
+.cv-account-main-grid,
+.cv-account-layout-grid,
+.cv-settings-layout,
+.cv-assessment-overview-grid {
+  align-items: start;
+  gap: var(--cv-layout-shell-gap);
+}
+
+.cv-timeline-summary-grid,
+.cv-timeline-bottom-grid,
+.cv-education-stats-grid,
+.cv-education-bottom-grid,
+.cv-dash-metrics,
+.cv-incident-layout,
+.cv-notification-layout,
+.cv-help-main-grid {
+  gap: var(--cv-layout-shell-gap);
+}
+
+.cv-account-main-grid > *,
+.cv-account-layout-grid > *,
+.cv-settings-layout > *,
+.cv-help-main-grid > *,
+.cv-notification-layout > * {
+  min-width: 0;
+}
+
+.cv-notification-toolbar {
+  box-shadow: var(--cv-layout-shell-shadow);
+}
+
+.cv-info-list-section,
+.cv-info-preview-panel,
+.cv-notification-panel,
+.cv-help-panel,
+.cv-account-card,
+.cv-settings-sidebar,
+.cv-settings-card {
+  min-height: 100%;
+}
+
+@media (max-width: 720px) {
+  :where(
+    .cv-dash-metrics,
+    .cv-dash-quick-actions,
+    .cv-dash-main-grid,
+    .cv-dash-main-grid--secondary,
+    .cv-timeline-summary-grid,
+    .cv-roadmap-section,
+    .cv-timeline-bottom-grid,
+    .cv-education-stats-grid,
+    .cv-education-bottom-grid,
+    .cv-incident-steps,
+    .cv-incident-layout,
+    .cv-info-board,
+    .cv-info-summary-grid,
+    .cv-info-content,
+    .cv-assessment-overview-grid,
+    .cv-notification-summary-grid,
+    .cv-notification-toolbar,
+    .cv-notification-layout,
+    .cv-account-main-grid,
+    .cv-account-layout-grid,
+    .cv-settings-layout,
+    .cv-help-category-section,
+    .cv-help-main-grid,
+    .cv-help-page > .cv-help-panel
+  ) {
+    border-radius: 22px;
+    padding: 18px;
+  }
+
+  :where(
+    .cv-info-list-section,
+    .cv-info-preview-panel,
+    .cv-notification-panel,
+    .cv-account-card,
+    .cv-settings-sidebar,
+    .cv-settings-card,
+    .cv-help-panel
+  ) {
+    border-radius: 20px;
+  }
+}

@@ -1,0 +1,408 @@
+.cv-account-hub {
+  display: grid;
+  gap: 18px;
+}
+
+.cv-account-hero,
+.cv-account-card,
+.cv-account-feedback,
+.cv-account-empty-state {
+  border-radius: 22px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+
+.cv-account-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+  gap: 18px;
+  padding: 28px 30px;
+  background:
+    radial-gradient(circle at top right, rgba(103, 216, 255, 0.24), transparent 28%),
+    linear-gradient(135deg, #0d3b66 0%, #145f9c 58%, #0b6cae 100%);
+  color: #ffffff;
+}
+
+.cv-account-hero__copy,
+.cv-account-hero__meta,
+.cv-account-edit-form,
+.cv-account-field,
+.cv-account-completion,
+.cv-account-empty-state,
+.cv-account-activity-preview {
+  display: grid;
+}
+
+.cv-account-eyebrow,
+.cv-account-card__kicker {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cv-account-hero__copy {
+  gap: 10px;
+}
+
+.cv-account-hero__copy h1,
+.cv-account-card__head h2,
+.cv-account-profile-card__content h3,
+.cv-account-session-item h3,
+.cv-account-activity-preview h3,
+.cv-account-empty-state h3 {
+  margin: 0;
+  font-weight: 800;
+}
+
+.cv-account-hero__meta {
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.cv-account-hero__meta > div {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cv-account-hero__meta span {
+  display: block;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.cv-account-hero__meta strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.05rem;
+}
+
+.cv-account-feedback {
+  padding: 14px 16px;
+  background: #e9f4ff;
+  color: #0f5a96;
+  font-weight: 600;
+}
+
+.cv-account-main-grid,
+.cv-account-layout-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.cv-account-main-grid {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+}
+
+.cv-account-layout-grid {
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  align-items: start;
+}
+
+.cv-account-side-column,
+.cv-account-session-list,
+.cv-account-activity-list,
+.cv-account-completion__list {
+  display: grid;
+  gap: 12px;
+}
+
+.cv-account-card {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(13, 93, 152, 0.08);
+}
+
+.cv-account-card__head,
+.cv-account-tag-row,
+.cv-account-action-row,
+.cv-account-profile-card,
+.cv-account-security-grid,
+.cv-account-session-item__main {
+  display: flex;
+}
+
+.cv-account-card__head {
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cv-account-card__kicker {
+  margin: 0 0 4px;
+  color: #56718c;
+}
+
+.cv-account-card__head h2 {
+  color: #14324f;
+  font-size: 1.2rem;
+}
+
+.cv-account-profile-card {
+  gap: 18px;
+  align-items: start;
+}
+
+.cv-account-profile-card__visual {
+  flex: 0 0 160px;
+  height: 160px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #eef7ff 0%, #dbeefe 100%);
+}
+
+.cv-account-profile-card__visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cv-account-profile-card__content,
+.cv-account-edit-form,
+.cv-account-security-item,
+.cv-account-session-item,
+.cv-account-activity-item {
+  gap: 10px;
+}
+
+.cv-account-profile-card__content {
+  display: grid;
+}
+
+.cv-account-profile-card__content p,
+.cv-account-activity-preview p,
+.cv-account-empty-state p,
+.cv-account-session-item p {
+  margin: 0;
+  color: #4d6984;
+  line-height: 1.6;
+}
+
+.cv-account-profile-card__bio {
+  max-width: 560px;
+}
+
+.cv-account-tag-row,
+.cv-account-action-row {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cv-account-tag,
+.cv-account-count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.cv-account-tag,
+.cv-account-count-pill {
+  background: #eef6ff;
+  color: #0d5d98;
+}
+
+.cv-account-tag.is-success {
+  background: #e8f9ed;
+  color: #1d8a47;
+}
+
+.cv-account-tag.is-warning {
+  background: #fff5dd;
+  color: #b45309;
+}
+
+.cv-account-tag.is-info {
+  background: #eef6ff;
+  color: #0d5d98;
+}
+
+.cv-account-field {
+  gap: 8px;
+}
+
+.cv-account-field label {
+  color: #14324f;
+  font-weight: 700;
+}
+
+.cv-account-field input,
+.cv-account-field textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid rgba(13, 93, 152, 0.16);
+  border-radius: 14px;
+  outline: 0;
+}
+
+.cv-account-field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.cv-account-field__error {
+  color: #b42318;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.cv-account-primary-button,
+.cv-account-secondary-button,
+.cv-account-activity-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.cv-account-primary-button {
+  border: 0;
+  background: #0d5d98;
+  color: #ffffff;
+}
+
+.cv-account-secondary-button {
+  border: 1px solid rgba(13, 93, 152, 0.16);
+  background: #ffffff;
+  color: #0d5d98;
+}
+
+.cv-account-security-grid {
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cv-account-security-item {
+  display: grid;
+  flex: 1;
+  min-width: 180px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #f8fbff;
+  border: 1px solid rgba(13, 93, 152, 0.08);
+}
+
+.cv-account-security-item span,
+.cv-account-completion__item span,
+.cv-account-activity-item span {
+  color: #56718c;
+}
+
+.cv-account-security-item strong {
+  color: #14324f;
+  font-size: 1.1rem;
+}
+
+.cv-account-completion {
+  margin-top: 18px;
+  gap: 10px;
+}
+
+.cv-account-completion h3 {
+  margin: 0;
+  color: #14324f;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.cv-account-completion__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cv-account-completion__item i {
+  color: #0d5d98;
+}
+
+.cv-account-session-item {
+  display: grid;
+  padding: 16px;
+  border-radius: 18px;
+  background: #f8fbff;
+  border: 1px solid rgba(13, 93, 152, 0.08);
+}
+
+.cv-account-session-item__main {
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cv-account-activity-item {
+  justify-content: flex-start;
+  height: auto;
+  padding: 14px 16px;
+  border: 1px solid rgba(13, 93, 152, 0.08);
+  background: #f8fbff;
+  color: #14324f;
+  text-align: left;
+}
+
+.cv-account-activity-item.is-active {
+  border-color: rgba(13, 93, 152, 0.32);
+  background: #eef6ff;
+}
+
+.cv-account-activity-preview {
+  gap: 12px;
+}
+
+.cv-account-activity-preview span {
+  color: #56718c;
+}
+
+.cv-account-empty-state {
+  gap: 10px;
+  place-items: center;
+  padding: 32px 18px;
+  background: #f8fbff;
+  text-align: center;
+}
+
+.cv-account-empty-state i {
+  color: #0d5d98;
+  font-size: 1.8rem;
+}
+
+.cv-account-empty-state--compact {
+  box-shadow: none;
+  border: 1px dashed rgba(13, 93, 152, 0.16);
+}
+
+@media (max-width: 1180px) {
+  .cv-account-main-grid,
+  .cv-account-layout-grid,
+  .cv-account-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .cv-account-profile-card,
+  .cv-account-card__head,
+  .cv-account-session-item__main {
+    flex-direction: column;
+  }
+
+  .cv-account-profile-card__visual {
+    width: 140px;
+    flex-basis: 140px;
+    height: 140px;
+  }
+
+  .cv-account-primary-button,
+  .cv-account-secondary-button {
+    width: 100%;
+  }
+}

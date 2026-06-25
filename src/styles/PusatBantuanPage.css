@@ -1,0 +1,379 @@
+.cv-help-page {
+  display: grid;
+  gap: 18px;
+}
+
+.cv-help-hero,
+.cv-help-feedback,
+.cv-help-panel,
+.cv-help-summary-card,
+.cv-help-empty-state {
+  border-radius: 22px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+
+.cv-help-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: 18px;
+  padding: 28px 30px;
+  background:
+    radial-gradient(circle at top right, rgba(103, 216, 255, 0.24), transparent 28%),
+    linear-gradient(135deg, #0d3b66 0%, #145f9c 58%, #0b6cae 100%);
+  color: #ffffff;
+}
+
+.cv-help-hero__copy,
+.cv-help-summary-grid,
+.cv-help-category-grid,
+.cv-help-main-grid,
+.cv-help-side-grid,
+.cv-help-faq-list,
+.cv-help-troubleshooting-list,
+.cv-help-quick-grid,
+.cv-help-support-form,
+.cv-help-form-grid,
+.cv-help-field,
+.cv-help-empty-state {
+  display: grid;
+}
+
+.cv-help-eyebrow {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cv-help-search,
+.cv-help-section-head,
+.cv-help-tag-row,
+.cv-help-action-row,
+.cv-help-troubleshooting-item {
+  display: flex;
+}
+
+.cv-help-hero__copy {
+  gap: 10px;
+}
+
+.cv-help-hero__copy h1,
+.cv-help-section-head h2,
+.cv-help-category-card strong,
+.cv-help-faq-item__trigger strong,
+.cv-help-empty-state h3 {
+  margin: 0;
+  font-weight: 800;
+}
+
+.cv-help-search {
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cv-help-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #ffffff;
+}
+
+.cv-help-search input::placeholder {
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.cv-help-feedback {
+  padding: 14px 16px;
+  background: #e9f4ff;
+  color: #0f5a96;
+  font-weight: 600;
+}
+
+.cv-help-summary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cv-help-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.cv-help-summary-card i {
+  color: #0d5d98;
+  font-size: 1.15rem;
+}
+
+.cv-help-summary-card span,
+.cv-help-section-head span,
+.cv-help-category-card span,
+.cv-help-faq-item__trigger span,
+.cv-help-troubleshooting-item span {
+  color: #56718c;
+}
+
+.cv-help-summary-card strong {
+  display: block;
+  color: #14324f;
+  font-size: 1.2rem;
+}
+
+.cv-help-section-head {
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.cv-help-category-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cv-help-category-card,
+.cv-help-quick-action,
+.cv-help-primary-button,
+.cv-help-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  font-weight: 700;
+}
+
+.cv-help-category-card {
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 16px;
+  border: 1px solid rgba(13, 93, 152, 0.08);
+  background: #ffffff;
+  text-align: left;
+}
+
+.cv-help-category-card.is-active {
+  border-color: rgba(13, 93, 152, 0.32);
+  background: #eef6ff;
+}
+
+.cv-help-main-grid {
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.cv-help-side-grid {
+  gap: 18px;
+}
+
+.cv-help-panel {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(13, 93, 152, 0.08);
+}
+
+.cv-help-faq-list,
+.cv-help-troubleshooting-list,
+.cv-help-quick-grid,
+.cv-help-support-form {
+  gap: 12px;
+}
+
+.cv-help-faq-item {
+  border: 1px solid rgba(13, 93, 152, 0.08);
+  border-radius: 18px;
+  background: #f8fbff;
+}
+
+.cv-help-faq-item__trigger {
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.cv-help-faq-item__content {
+  display: grid;
+  gap: 12px;
+  padding: 0 16px 16px;
+}
+
+.cv-help-faq-item__content p,
+.cv-help-empty-state p,
+.cv-help-troubleshooting-item strong + span,
+.cv-help-field label {
+  color: #4d6984;
+}
+
+.cv-help-tag-row,
+.cv-help-action-row {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cv-help-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #eef6ff;
+  color: #0d5d98;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.cv-help-progress {
+  width: 100%;
+  height: 10px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  background: #dbeafe;
+  overflow: hidden;
+}
+
+.cv-help-progress__fill {
+  display: block;
+  height: 100%;
+  background: #0d5d98;
+}
+
+.cv-help-troubleshooting-item {
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  background: #f8fbff;
+  border: 1px solid rgba(13, 93, 152, 0.08);
+}
+
+.cv-help-check-toggle {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.cv-help-check-toggle i {
+  color: #0d5d98;
+}
+
+.cv-help-check-toggle.is-complete strong {
+  color: #1d8a47;
+}
+
+.cv-help-quick-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cv-help-quick-action,
+.cv-help-primary-button,
+.cv-help-secondary-button {
+  min-height: 40px;
+  padding: 0 16px;
+}
+
+.cv-help-quick-action,
+.cv-help-secondary-button {
+  border: 1px solid rgba(13, 93, 152, 0.16);
+  background: #ffffff;
+  color: #0d5d98;
+}
+
+.cv-help-primary-button {
+  border: 0;
+  background: #0d5d98;
+  color: #ffffff;
+}
+
+.cv-help-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cv-help-field {
+  gap: 8px;
+}
+
+.cv-help-field label {
+  font-weight: 700;
+}
+
+.cv-help-field input,
+.cv-help-field select,
+.cv-help-field textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid rgba(13, 93, 152, 0.16);
+  border-radius: 14px;
+  outline: 0;
+}
+
+.cv-help-field textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.cv-help-field__error {
+  color: #b42318;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.cv-help-empty-state {
+  gap: 10px;
+  place-items: center;
+  padding: 30px 18px;
+  background: #f8fbff;
+  text-align: center;
+}
+
+.cv-help-empty-state i {
+  color: #0d5d98;
+  font-size: 1.8rem;
+}
+
+@media (max-width: 1180px) {
+  .cv-help-hero,
+  .cv-help-main-grid,
+  .cv-help-category-grid,
+  .cv-help-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .cv-help-form-grid,
+  .cv-help-quick-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-help-section-head,
+  .cv-help-troubleshooting-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cv-help-primary-button,
+  .cv-help-secondary-button,
+  .cv-help-quick-action {
+    width: 100%;
+  }
+}

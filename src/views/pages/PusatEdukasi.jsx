@@ -1,160 +1,161 @@
+import { useEffect, useMemo, useState } from 'react'
 import heroImage from '../../assets/WhatsApp Image 2026-06-10 at 15.47.24.jpeg'
+import {
+  educationActivities,
+  educationCategoryCards,
+  educationLevels as defaultEducationLevels,
+  educationStatistics,
+  educationTips,
+} from '../../data/education/educationData.js'
+import {
+  getEducationCategories,
+  getEducationLevels,
+  getEducationModules,
+  startModule,
+  updateModuleProgress,
+} from '../../services/education/educationService.js'
+
+function getModuleActionLabel(status) {
+  if (status === 'completed') {
+    return 'Lihat Ulang'
+  }
+
+  if (status === 'in_progress') {
+    return 'Lanjutkan'
+  }
+
+  return 'Mulai Belajar'
+}
+
+function getModuleStatusLabel(status) {
+  if (status === 'completed') {
+    return 'Selesai'
+  }
+
+  if (status === 'in_progress') {
+    return 'Sedang dipelajari'
+  }
+
+  return 'Belum dimulai'
+}
 
 function PusatEdukasi() {
-  const quickCategories = [
-    'Keamanan Dasar',
-    'Privasi Data',
-    'Phishing',
-    'Mobile Banking',
-    'Smart City',
-  ]
+  const [searchQuery, setSearchQuery] = useState('')
+  const [activeCategory, setActiveCategory] = useState('Semua')
+  const [activeLevel, setActiveLevel] = useState(defaultEducationLevels[0])
+  const [selectedModule, setSelectedModule] = useState(null)
+  const [modules, setModules] = useState([])
+  const [categories, setCategories] = useState([])
+  const [levels, setLevels] = useState(defaultEducationLevels)
+  const [isLoading, setIsLoading] = useState(true)
+  const [feedbackMessage, setFeedbackMessage] = useState('')
 
-  const statistics = [
-    {
-      icon: 'bi-bar-chart-line',
-      title: 'Progress Belajar',
-      value: '68%',
-      note: 'Naik 12% bulan ini',
-      tone: 'blue',
-    },
-    {
-      icon: 'bi-clock-history',
-      title: 'Total Waktu Belajar',
-      value: '18j 12m',
-      note: '4j 12m minggu ini',
-      tone: 'sky',
-    },
-    {
-      icon: 'bi-journal-check',
-      title: 'Materi Diselesaikan',
-      value: '12 Modul',
-      note: 'dari 24 materi aktif',
-      tone: 'green',
-    },
-    {
-      icon: 'bi-patch-check',
-      title: 'Sertifikat',
-      value: '6 Badge',
-      note: '2 badge siap dibuka',
-      tone: 'amber',
-    },
-    {
-      icon: 'bi-trophy',
-      title: 'Level',
-      value: 'Level 2',
-      note: 'Waspada Digital',
-      tone: 'violet',
-    },
-  ]
+  useEffect(() => {
+    async function loadEducationData() {
+      setIsLoading(true)
 
-  const featuredMaterials = [
-    {
-      title: 'Waspada Phishing',
-      progress: '82%',
-      duration: '28 menit',
-      status: 'Sedang dipelajari',
-      imageTone: 'blue',
-      icon: 'bi-shield-exclamation',
-    },
-    {
-      title: 'Password yang Kuat',
-      progress: '100%',
-      duration: '22 menit',
-      status: 'Selesai',
-      imageTone: 'green',
-      icon: 'bi-key',
-    },
-    {
-      title: 'Keamanan Media Sosial',
-      progress: '56%',
-      duration: '31 menit',
-      status: 'Lanjutkan',
-      imageTone: 'sky',
-      icon: 'bi-instagram',
-    },
-    {
-      title: 'Keamanan Mobile Banking',
-      progress: '34%',
-      duration: '26 menit',
-      status: 'Baru dimulai',
-      imageTone: 'amber',
-      icon: 'bi-phone',
-    },
-    {
-      title: 'Smart City & Keamanan Data',
-      progress: '12%',
-      duration: '35 menit',
-      status: 'Direkomendasikan',
-      imageTone: 'violet',
-      icon: 'bi-buildings',
-    },
-  ]
+      const [modulesResponse, categoriesResponse, levelsResponse] = await Promise.all([
+        getEducationModules(),
+        getEducationCategories(),
+        getEducationLevels(),
+      ])
 
-  const categories = [
-    {
-      title: 'Keamanan Dasar',
-      desc: 'Mulai dari fondasi keamanan akun dan perangkat.',
-      icon: 'bi-shield-lock',
-    },
-    {
-      title: 'Privasi Data',
-      desc: 'Belajar mengelola izin, data pribadi, dan jejak digital.',
-      icon: 'bi-file-earmark-lock',
-    },
-    {
-      title: 'Phishing & Penipuan',
-      desc: 'Kenali modus penipuan online dan serangan rekayasa sosial.',
-      icon: 'bi-bug',
-    },
-    {
-      title: 'Keamanan Akun',
-      desc: 'Perkuat password, MFA, dan pengaturan akun penting.',
-      icon: 'bi-person-lock',
-    },
-    {
-      title: 'Perangkat & Jaringan',
-      desc: 'Amankan laptop, ponsel, Wi-Fi, dan koneksi publik.',
-      icon: 'bi-router',
-    },
-    {
-      title: 'Smart City & IoT',
-      desc: 'Pahami risiko data di layanan cerdas dan perangkat terhubung.',
-      icon: 'bi-cpu',
-    },
-  ]
+      setModules(modulesResponse.data)
+      setCategories(categoriesResponse.data)
+      setLevels(levelsResponse.data)
+      setSelectedModule(modulesResponse.data[0] ?? null)
+      setIsLoading(false)
+    }
 
-  const activities = [
-    {
-      title: 'Menyelesaikan modul Password yang Kuat',
-      description: 'Anda berhasil menamatkan materi dan membuka ringkasan praktik terbaik.',
-      time: 'Hari ini, 09:30',
-      icon: 'bi-check2-circle',
-    },
-    {
-      title: 'Melanjutkan kuis Waspada Phishing',
-      description: 'Skor sementara 80%. Satu sesi lagi untuk menuntaskan evaluasi.',
-      time: 'Kemarin, 16:45',
-      icon: 'bi-lightning-charge',
-    },
-    {
-      title: 'Membuka kategori Smart City & Keamanan Data',
-      description: 'Kategori baru aktif berdasarkan progres dan minat pembelajaran Anda.',
-      time: 'Kemarin, 11:20',
-      icon: 'bi-grid-1x2',
-    },
-    {
-      title: 'Meraih badge Akun Lebih Aman',
-      description: 'Badge diberikan setelah menyelesaikan materi autentikasi dua faktor.',
-      time: '2 hari lalu',
-      icon: 'bi-award',
-    },
-  ]
+    loadEducationData()
+  }, [])
 
-  const tips = [
-    'Gunakan password manager agar setiap akun memiliki password unik.',
-    'Jangan pernah membagikan kode OTP, bahkan kepada pihak yang mengaku resmi.',
-    'Periksa ulang URL sebelum login ke layanan finansial atau pemerintahan digital.',
-  ]
+  const filteredMaterials = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase()
+
+    return modules.filter((item) => {
+      const matchesCategory = activeCategory === 'Semua' || item.category === activeCategory
+      const matchesLevel = activeLevel === 'Semua Level' || item.level === activeLevel
+      const matchesQuery =
+        !normalizedQuery ||
+        item.title.toLowerCase().includes(normalizedQuery) ||
+        item.description.toLowerCase().includes(normalizedQuery) ||
+        item.category.toLowerCase().includes(normalizedQuery) ||
+        item.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery))
+
+      return matchesCategory && matchesLevel && matchesQuery
+    })
+  }, [activeCategory, activeLevel, modules, searchQuery])
+
+  const handleOpenModule = (module) => {
+    setSelectedModule(module)
+    setFeedbackMessage('')
+  }
+
+  const handleResetFilters = () => {
+    setSearchQuery('')
+    setActiveCategory('Semua')
+    setActiveLevel('Semua Level')
+    setFeedbackMessage('')
+  }
+
+  const handleStartModule = async (moduleId) => {
+    const currentModule = modules.find((item) => item.id === moduleId)
+
+    if (!currentModule) {
+      return
+    }
+
+    let nextProgress = currentModule.progress
+    let nextStatus = currentModule.status
+
+    if (currentModule.status === 'completed') {
+      nextProgress = 100
+      nextStatus = 'completed'
+    } else if (currentModule.status === 'in_progress') {
+      nextProgress = Math.min(currentModule.progress + 10, 100)
+      nextStatus = nextProgress >= 100 ? 'completed' : 'in_progress'
+      await updateModuleProgress(moduleId, nextProgress)
+    } else {
+      nextProgress = Math.max(currentModule.progress, 10)
+      nextStatus = 'in_progress'
+      await startModule(moduleId)
+    }
+
+    const updatedModules = modules.map((item) =>
+      item.id === moduleId
+        ? {
+            ...item,
+            progress: nextProgress,
+            status: nextStatus,
+          }
+        : item,
+    )
+
+    setModules(updatedModules)
+    setSelectedModule(updatedModules.find((item) => item.id === moduleId) ?? currentModule)
+    setFeedbackMessage('Mode demo: progress belajar diperbarui sementara.')
+  }
+
+  const handleCompleteModule = () => {
+    if (!selectedModule) {
+      return
+    }
+
+    const updatedModules = modules.map((item) =>
+      item.id === selectedModule.id
+        ? {
+            ...item,
+            progress: 100,
+            status: 'completed',
+          }
+        : item,
+    )
+
+    setModules(updatedModules)
+    setSelectedModule(updatedModules.find((item) => item.id === selectedModule.id) ?? selectedModule)
+    setFeedbackMessage('Mode demo: modul ditandai selesai untuk sesi ini.')
+  }
 
   return (
     <div className="cv-dashboard-container cv-education-page">
@@ -163,22 +164,53 @@ function PusatEdukasi() {
           <p className="cv-section-kicker">Pusat Edukasi</p>
           <h1>Cyber Learning Center</h1>
           <p className="cv-education-hero-card__text">
-            Pusat pembelajaran keamanan digital CyberVault untuk membantu Anda
-            memahami ancaman siber, memperkuat privasi, dan membangun kebiasaan
-            online yang lebih aman di era smart city.
+            Pusat pembelajaran keamanan digital CyberVault untuk membantu Anda memahami
+            ancaman siber, memperkuat privasi, dan membangun kebiasaan online yang lebih
+            aman di era smart city.
           </p>
 
           <div className="cv-education-search">
             <i className="bi bi-search" />
-            <input type="text" placeholder="Cari materi, topik, atau kategori..." />
+            <input
+              type="text"
+              value={searchQuery}
+              placeholder="Cari materi, topik, atau kategori..."
+              onChange={(event) => setSearchQuery(event.target.value)}
+            />
           </div>
 
           <div className="cv-education-chip-row">
-            {quickCategories.map((item) => (
-              <button key={item} type="button" className="cv-education-chip">
+            {categories.map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={`cv-education-chip${activeCategory === item ? ' is-active' : ''}`}
+                onClick={() => setActiveCategory(item)}
+              >
                 {item}
               </button>
             ))}
+          </div>
+
+          <div className="cv-education-chip-row cv-education-chip-row--secondary">
+            {levels.map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={`cv-education-chip${activeLevel === item ? ' is-active' : ''}`}
+                onClick={() => setActiveLevel(item)}
+              >
+                {item}
+              </button>
+            ))}
+
+            <button
+              type="button"
+              className="cv-education-chip cv-education-chip--reset"
+              onClick={handleResetFilters}
+            >
+              Reset Filter
+            </button>
           </div>
         </div>
 
@@ -194,7 +226,7 @@ function PusatEdukasi() {
       </section>
 
       <section className="cv-education-stats-grid">
-        {statistics.map((item) => (
+        {educationStatistics.map((item) => (
           <article key={item.title} className="cv-education-stat-card">
             <div className={`cv-education-stat-card__icon is-${item.tone}`}>
               <i className={`bi ${item.icon}`} />
@@ -216,30 +248,108 @@ function PusatEdukasi() {
           </div>
         </div>
 
+        {feedbackMessage ? <div className="alert alert-info">{feedbackMessage}</div> : null}
+
+        {selectedModule ? (
+          <div className="cv-education-preview">
+            <div className="cv-education-preview__content">
+              <p className="cv-section-kicker">Preview Modul</p>
+              <h3>{selectedModule.title}</h3>
+              <p>{selectedModule.description}</p>
+
+              <div className="cv-education-preview__meta">
+                <span>{selectedModule.category}</span>
+                <span>{selectedModule.level}</span>
+                <span>{selectedModule.duration}</span>
+                <span>{selectedModule.lessons} lessons</span>
+              </div>
+
+              <div className="cv-education-preview__progress">
+                <div className="cv-education-material-card__progress-bar">
+                  <span style={{ width: `${selectedModule.progress}%` }} />
+                </div>
+                <strong>{selectedModule.progress}%</strong>
+              </div>
+            </div>
+
+            <div className="cv-education-preview__actions">
+              <button
+                type="button"
+                className="cv-education-action-button"
+                onClick={() => handleStartModule(selectedModule.id)}
+              >
+                {getModuleActionLabel(selectedModule.status)}
+              </button>
+              <button
+                type="button"
+                className="cv-education-action-button cv-education-action-button--ghost"
+                onClick={handleCompleteModule}
+              >
+                Tandai Selesai
+              </button>
+            </div>
+          </div>
+        ) : null}
+
         <div className="cv-education-material-grid">
-          {featuredMaterials.map((item) => (
-            <article key={item.title} className="cv-education-material-card">
-              <div className={`cv-education-material-card__thumb is-${item.imageTone}`}>
-                <i className={`bi ${item.icon}`} />
-              </div>
-
-              <div className="cv-education-material-card__body">
-                <h3>{item.title}</h3>
-
-                <div className="cv-education-material-card__meta">
-                  <span>{item.duration}</span>
-                  <span>{item.status}</span>
+          {isLoading ? (
+            <div className="cv-education-empty-state">Memuat materi edukasi...</div>
+          ) : filteredMaterials.length > 0 ? (
+            filteredMaterials.map((item) => (
+              <article
+                key={item.id}
+                className="cv-education-material-card"
+                role="button"
+                tabIndex={0}
+                onClick={() => handleOpenModule(item)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    handleOpenModule(item)
+                  }
+                }}
+              >
+                <div className={`cv-education-material-card__thumb is-${item.imageTone}`}>
+                  <i className={`bi ${item.icon}`} />
                 </div>
 
-                <div className="cv-education-material-card__progress">
-                  <div className="cv-education-material-card__progress-bar">
-                    <span style={{ width: item.progress }} />
+                <div className="cv-education-material-card__body">
+                  <h3>{item.title}</h3>
+
+                  <div className="cv-education-material-card__meta">
+                    <span>{item.duration}</span>
+                    <span>{getModuleStatusLabel(item.status)}</span>
+                    <span>{item.level}</span>
                   </div>
-                  <strong>{item.progress}</strong>
+
+                  <div className="cv-education-material-card__progress">
+                    <div className="cv-education-material-card__progress-bar">
+                      <span style={{ width: `${item.progress}%` }} />
+                    </div>
+                    <strong>{item.progress}%</strong>
+                  </div>
+
+                  <div className="cv-education-material-card__footer">
+                    <span>{item.lessons} lessons</span>
+                    <button
+                      type="button"
+                      className="cv-education-action-button"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        handleStartModule(item.id)
+                      }}
+                    >
+                      {getModuleActionLabel(item.status)}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            ))
+          ) : (
+            <div className="cv-education-empty-state">
+              Tidak ada materi yang cocok dengan filter atau pencarian Anda.
+            </div>
+          )}
         </div>
       </section>
 
@@ -252,14 +362,21 @@ function PusatEdukasi() {
         </div>
 
         <div className="cv-education-category-grid">
-          {categories.map((item) => (
-            <article key={item.title} className="cv-education-category-card">
+          {educationCategoryCards.map((item) => (
+            <button
+              key={item.title}
+              type="button"
+              className={`cv-education-category-card${
+                activeCategory === item.title ? ' is-active' : ''
+              }`}
+              onClick={() => setActiveCategory(item.title)}
+            >
               <div className="cv-education-category-card__icon">
                 <i className={`bi ${item.icon}`} />
               </div>
               <h3>{item.title}</h3>
               <p>{item.desc}</p>
-            </article>
+            </button>
           ))}
         </div>
       </section>
@@ -274,13 +391,13 @@ function PusatEdukasi() {
           </div>
 
           <div className="cv-education-activity-timeline">
-            {activities.map((item, index) => (
+            {educationActivities.map((item, index) => (
               <article key={`${item.title}-${item.time}`} className="cv-education-activity-row">
                 <div className="cv-education-activity-row__rail">
                   <div className="cv-education-activity-row__icon">
                     <i className={`bi ${item.icon}`} />
                   </div>
-                  {index < activities.length - 1 ? (
+                  {index < educationActivities.length - 1 ? (
                     <span className="cv-education-activity-row__line" aria-hidden="true" />
                   ) : null}
                 </div>
@@ -304,7 +421,7 @@ function PusatEdukasi() {
           </div>
 
           <div className="cv-education-tips-list">
-            {tips.map((item) => (
+            {educationTips.map((item) => (
               <div key={item} className="cv-education-tip-item">
                 <i className="bi bi-stars" />
                 <p>{item}</p>
@@ -315,8 +432,8 @@ function PusatEdukasi() {
           <div className="cv-education-tips-highlight">
             <strong>Fokus hari ini:</strong>
             <p>
-              Selesaikan materi phishing sebelum membuka tautan yang tidak dikenal
-              di pesan instan atau email kerja.
+              Selesaikan materi phishing sebelum membuka tautan yang tidak dikenal di pesan
+              instan atau email kerja.
             </p>
           </div>
         </article>
